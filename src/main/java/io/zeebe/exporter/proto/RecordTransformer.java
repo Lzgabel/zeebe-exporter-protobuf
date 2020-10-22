@@ -23,10 +23,6 @@ import com.google.protobuf.ListValue;
 import com.google.protobuf.NullValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
-import io.zeebe.exporter.proto.Schema.RecordMetadata;
-import io.zeebe.exporter.proto.Schema.VariableDocumentRecord;
-import io.zeebe.exporter.proto.Schema.VariableDocumentRecord.UpdateSemantics;
-import io.zeebe.exporter.proto.Schema.WorkflowInstanceRecord;
 import io.zeebe.protocol.record.Record;
 import io.zeebe.protocol.record.RecordType;
 import io.zeebe.protocol.record.ValueType;
@@ -63,33 +59,29 @@ public final class RecordTransformer {
   private static final EnumMap<ValueType, Function<Record, GeneratedMessageV3>> TRANSFORMERS =
       new EnumMap<>(ValueType.class);
 
-  private static final EnumMap<ValueType, RecordMetadata.ValueType> VALUE_TYPE_MAPPING =
+  private static final EnumMap<ValueType, Schema.RecordMetadata.ValueType> VALUE_TYPE_MAPPING =
       new EnumMap<>(ValueType.class);
 
-  private static final EnumMap<RecordType, RecordMetadata.RecordType> RECORD_TYPE_MAPPING =
-      new EnumMap<>(
-          Map.of(
-              RecordType.COMMAND,
-              RecordMetadata.RecordType.COMMAND,
-              RecordType.COMMAND_REJECTION,
-              RecordMetadata.RecordType.COMMAND_REJECTION,
-              RecordType.EVENT,
-              RecordMetadata.RecordType.EVENT));
+  private static final EnumMap<RecordType, Schema.RecordMetadata.RecordType> RECORD_TYPE_MAPPING =
+      new EnumMap<>(RecordType.class);
 
-  private static final EnumMap<BpmnElementType, WorkflowInstanceRecord.BpmnElementType>
+  private static final EnumMap<BpmnElementType, Schema.WorkflowInstanceRecord.BpmnElementType>
       BPMN_ELEMENT_TYPE_MAPPING = new EnumMap<>(BpmnElementType.class);
 
   private static final EnumMap<
-          VariableDocumentUpdateSemantic, VariableDocumentRecord.UpdateSemantics>
-      UPDATE_SEMANTICS_MAPPING =
-          new EnumMap<>(
-              Map.of(
-                  VariableDocumentUpdateSemantic.LOCAL,
-                  UpdateSemantics.LOCAL,
-                  VariableDocumentUpdateSemantic.PROPAGATE,
-                  UpdateSemantics.PROPAGATE));
+          VariableDocumentUpdateSemantic, Schema.VariableDocumentRecord.UpdateSemantics>
+      UPDATE_SEMANTICS_MAPPING = new EnumMap<>(VariableDocumentUpdateSemantic.class);
 
   static {
+    // record type mapping
+    RECORD_TYPE_MAPPING.put(RecordType.COMMAND, Schema.RecordMetadata.RecordType.COMMAND);
+    RECORD_TYPE_MAPPING.put(RecordType.COMMAND_REJECTION, Schema.RecordMetadata.RecordType.COMMAND_REJECTION);
+    RECORD_TYPE_MAPPING.put(RecordType.EVENT, Schema.RecordMetadata.RecordType.EVENT);
+
+    // update semantics mapping
+    UPDATE_SEMANTICS_MAPPING.put(VariableDocumentUpdateSemantic.LOCAL, Schema.VariableDocumentRecord.UpdateSemantics.LOCAL);
+    UPDATE_SEMANTICS_MAPPING.put(VariableDocumentUpdateSemantic.PROPAGATE, Schema.VariableDocumentRecord.UpdateSemantics.PROPAGATE);
+
     TRANSFORMERS.put(ValueType.DEPLOYMENT, RecordTransformer::toDeploymentRecord);
     TRANSFORMERS.put(ValueType.WORKFLOW_INSTANCE, RecordTransformer::toWorkflowInstanceRecord);
     TRANSFORMERS.put(ValueType.JOB_BATCH, RecordTransformer::toJobBatchRecord);
@@ -113,61 +105,61 @@ public final class RecordTransformer {
     TRANSFORMERS.put(
         ValueType.WORKFLOW_INSTANCE_RESULT, RecordTransformer::toWorkflowInstanceResultRecord);
 
-    VALUE_TYPE_MAPPING.put(ValueType.DEPLOYMENT, RecordMetadata.ValueType.DEPLOYMENT);
-    VALUE_TYPE_MAPPING.put(ValueType.ERROR, RecordMetadata.ValueType.ERROR);
-    VALUE_TYPE_MAPPING.put(ValueType.INCIDENT, RecordMetadata.ValueType.INCIDENT);
-    VALUE_TYPE_MAPPING.put(ValueType.JOB, RecordMetadata.ValueType.JOB);
-    VALUE_TYPE_MAPPING.put(ValueType.JOB_BATCH, RecordMetadata.ValueType.JOB_BATCH);
-    VALUE_TYPE_MAPPING.put(ValueType.MESSAGE, RecordMetadata.ValueType.MESSAGE);
+    VALUE_TYPE_MAPPING.put(ValueType.DEPLOYMENT, Schema.RecordMetadata.ValueType.DEPLOYMENT);
+    VALUE_TYPE_MAPPING.put(ValueType.ERROR, Schema.RecordMetadata.ValueType.ERROR);
+    VALUE_TYPE_MAPPING.put(ValueType.INCIDENT, Schema.RecordMetadata.ValueType.INCIDENT);
+    VALUE_TYPE_MAPPING.put(ValueType.JOB, Schema.RecordMetadata.ValueType.JOB);
+    VALUE_TYPE_MAPPING.put(ValueType.JOB_BATCH, Schema.RecordMetadata.ValueType.JOB_BATCH);
+    VALUE_TYPE_MAPPING.put(ValueType.MESSAGE, Schema.RecordMetadata.ValueType.MESSAGE);
     VALUE_TYPE_MAPPING.put(
         ValueType.MESSAGE_START_EVENT_SUBSCRIPTION,
-        RecordMetadata.ValueType.MESSAGE_START_EVENT_SUBSCRIPTION);
+            Schema.RecordMetadata.ValueType.MESSAGE_START_EVENT_SUBSCRIPTION);
     VALUE_TYPE_MAPPING.put(
-        ValueType.MESSAGE_SUBSCRIPTION, RecordMetadata.ValueType.MESSAGE_SUBSCRIPTION);
-    VALUE_TYPE_MAPPING.put(ValueType.TIMER, RecordMetadata.ValueType.TIMER);
-    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE, RecordMetadata.ValueType.VARIABLE);
-    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE_DOCUMENT, RecordMetadata.ValueType.VARIABLE_DOCUMENT);
-    VALUE_TYPE_MAPPING.put(ValueType.WORKFLOW_INSTANCE, RecordMetadata.ValueType.WORKFLOW_INSTANCE);
+        ValueType.MESSAGE_SUBSCRIPTION, Schema.RecordMetadata.ValueType.MESSAGE_SUBSCRIPTION);
+    VALUE_TYPE_MAPPING.put(ValueType.TIMER, Schema.RecordMetadata.ValueType.TIMER);
+    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE, Schema.RecordMetadata.ValueType.VARIABLE);
+    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE_DOCUMENT, Schema.RecordMetadata.ValueType.VARIABLE_DOCUMENT);
+    VALUE_TYPE_MAPPING.put(ValueType.WORKFLOW_INSTANCE, Schema.RecordMetadata.ValueType.WORKFLOW_INSTANCE);
     VALUE_TYPE_MAPPING.put(
-        ValueType.WORKFLOW_INSTANCE_CREATION, RecordMetadata.ValueType.WORKFLOW_INSTANCE_CREATION);
+        ValueType.WORKFLOW_INSTANCE_CREATION, Schema.RecordMetadata.ValueType.WORKFLOW_INSTANCE_CREATION);
     VALUE_TYPE_MAPPING.put(
-        ValueType.WORKFLOW_INSTANCE_RESULT, RecordMetadata.ValueType.WORKFLOW_INSTANCE_RESULT);
+        ValueType.WORKFLOW_INSTANCE_RESULT, Schema.RecordMetadata.ValueType.WORKFLOW_INSTANCE_RESULT);
     VALUE_TYPE_MAPPING.put(
         ValueType.WORKFLOW_INSTANCE_SUBSCRIPTION,
-        RecordMetadata.ValueType.WORKFLOW_INSTANCE_SUBSCRIPTION);
+            Schema.RecordMetadata.ValueType.WORKFLOW_INSTANCE_SUBSCRIPTION);
 
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.BOUNDARY_EVENT, WorkflowInstanceRecord.BpmnElementType.BOUNDARY_EVENT);
+        BpmnElementType.BOUNDARY_EVENT, Schema.WorkflowInstanceRecord.BpmnElementType.BOUNDARY_EVENT);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.CALL_ACTIVITY, WorkflowInstanceRecord.BpmnElementType.CALL_ACTIVITY);
+        BpmnElementType.CALL_ACTIVITY, Schema.WorkflowInstanceRecord.BpmnElementType.CALL_ACTIVITY);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.END_EVENT, WorkflowInstanceRecord.BpmnElementType.END_EVENT);
+        BpmnElementType.END_EVENT, Schema.WorkflowInstanceRecord.BpmnElementType.END_EVENT);
     BPMN_ELEMENT_TYPE_MAPPING.put(
         BpmnElementType.EVENT_BASED_GATEWAY,
-        WorkflowInstanceRecord.BpmnElementType.EVENT_BASED_GATEWAY);
+            Schema.WorkflowInstanceRecord.BpmnElementType.EVENT_BASED_GATEWAY);
     BPMN_ELEMENT_TYPE_MAPPING.put(
         BpmnElementType.EXCLUSIVE_GATEWAY,
-        WorkflowInstanceRecord.BpmnElementType.EXCLUSIVE_GATEWAY);
+            Schema.WorkflowInstanceRecord.BpmnElementType.EXCLUSIVE_GATEWAY);
     BPMN_ELEMENT_TYPE_MAPPING.put(
         BpmnElementType.INTERMEDIATE_CATCH_EVENT,
-        WorkflowInstanceRecord.BpmnElementType.INTERMEDIATE_CATCH_EVENT);
+            Schema.WorkflowInstanceRecord.BpmnElementType.INTERMEDIATE_CATCH_EVENT);
     BPMN_ELEMENT_TYPE_MAPPING.put(
         BpmnElementType.MULTI_INSTANCE_BODY,
-        WorkflowInstanceRecord.BpmnElementType.MULTI_INSTANCE_BODY);
+            Schema.WorkflowInstanceRecord.BpmnElementType.MULTI_INSTANCE_BODY);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.PARALLEL_GATEWAY, WorkflowInstanceRecord.BpmnElementType.PARALLEL_GATEWAY);
+        BpmnElementType.PARALLEL_GATEWAY, Schema.WorkflowInstanceRecord.BpmnElementType.PARALLEL_GATEWAY);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.PROCESS, WorkflowInstanceRecord.BpmnElementType.PROCESS);
+        BpmnElementType.PROCESS, Schema.WorkflowInstanceRecord.BpmnElementType.PROCESS);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.RECEIVE_TASK, WorkflowInstanceRecord.BpmnElementType.RECEIVE_TASK);
+        BpmnElementType.RECEIVE_TASK, Schema.WorkflowInstanceRecord.BpmnElementType.RECEIVE_TASK);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.SEQUENCE_FLOW, WorkflowInstanceRecord.BpmnElementType.SEQUENCE_FLOW);
+        BpmnElementType.SEQUENCE_FLOW, Schema.WorkflowInstanceRecord.BpmnElementType.SEQUENCE_FLOW);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.SERVICE_TASK, WorkflowInstanceRecord.BpmnElementType.SERVICE_TASK);
+        BpmnElementType.SERVICE_TASK, Schema.WorkflowInstanceRecord.BpmnElementType.SERVICE_TASK);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.START_EVENT, WorkflowInstanceRecord.BpmnElementType.START_EVENT);
+        BpmnElementType.START_EVENT, Schema.WorkflowInstanceRecord.BpmnElementType.START_EVENT);
     BPMN_ELEMENT_TYPE_MAPPING.put(
-        BpmnElementType.SUB_PROCESS, WorkflowInstanceRecord.BpmnElementType.SUB_PROCESS);
+        BpmnElementType.SUB_PROCESS, Schema.WorkflowInstanceRecord.BpmnElementType.SUB_PROCESS);
   }
 
   private RecordTransformer() {}
@@ -186,8 +178,8 @@ public final class RecordTransformer {
   }
 
   public static Schema.Record toGenericRecord(Record record) {
-    final var protobufRecord = toProtobufMessage(record);
-    final var anyRecord = Any.pack(protobufRecord);
+    final GeneratedMessageV3 protobufRecord = toProtobufMessage(record);
+    final com.google.protobuf.Any anyRecord = Any.pack(protobufRecord);
 
     return Schema.Record.newBuilder().setRecord(anyRecord).build();
   }
@@ -213,12 +205,12 @@ public final class RecordTransformer {
   }
 
   private static Schema.RecordMetadata.ValueType toValueType(ValueType valueType) {
-    return VALUE_TYPE_MAPPING.getOrDefault(valueType, RecordMetadata.ValueType.UNKNOWN_VALUE_TYPE);
+    return VALUE_TYPE_MAPPING.getOrDefault(valueType, Schema.RecordMetadata.ValueType.UNKNOWN_VALUE_TYPE);
   }
 
   private static Schema.RecordMetadata.RecordType toRecordType(RecordType recordType) {
     return RECORD_TYPE_MAPPING.getOrDefault(
-        recordType, RecordMetadata.RecordType.UNKNOWN_RECORD_TYPE);
+        recordType, Schema.RecordMetadata.RecordType.UNKNOWN_RECORD_TYPE);
   }
 
   private static Schema.DeploymentRecord toDeploymentRecord(Record<DeploymentRecordValue> record) {
@@ -410,7 +402,7 @@ public final class RecordTransformer {
   private static Schema.WorkflowInstanceRecord.BpmnElementType toBpmnElementType(
       BpmnElementType type) {
     return BPMN_ELEMENT_TYPE_MAPPING.getOrDefault(
-        type, WorkflowInstanceRecord.BpmnElementType.UNKNOWN_BPMN_ELEMENT_TYPE);
+        type, Schema.WorkflowInstanceRecord.BpmnElementType.UNKNOWN_BPMN_ELEMENT_TYPE);
   }
 
   private static Schema.WorkflowInstanceSubscriptionRecord toWorkflowInstanceSubscriptionRecord(
@@ -471,7 +463,7 @@ public final class RecordTransformer {
   private static Schema.VariableDocumentRecord.UpdateSemantics toUpdateSemantics(
       VariableDocumentUpdateSemantic updateSemantics) {
     return UPDATE_SEMANTICS_MAPPING.getOrDefault(
-        updateSemantics, UpdateSemantics.UNKNOWN_UPDATE_SEMANTICS);
+        updateSemantics, Schema.VariableDocumentRecord.UpdateSemantics.UNKNOWN_UPDATE_SEMANTICS);
   }
 
   private static Schema.ErrorRecord toErrorRecord(Record<ErrorRecordValue> record) {
