@@ -6,16 +6,16 @@
   <name>Zeebe Exporter Protobuf Schema</name>
   <groupId>io.zeebe</groupId>
   <artifactId>zeebe-exporter-protobuf</artifactId>
-  <version>0.12.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <url>https://github.com/zeebe-io/zeebe-exporter-protobuf/java</url>
+  <url>https://github.com/camunda-community-hub/zeebe-exporter-protobuf</url>
   <inceptionYear>2019</inceptionYear>
 
   <parent>
     <groupId>org.camunda</groupId>
     <artifactId>camunda-release-parent</artifactId>
-    <version>3.7</version>
+    <version>3.8.1</version>
     <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
     <relativePath />
   </parent>
@@ -37,36 +37,36 @@
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
     <!-- project dependencies -->
-    <version.assertj>3.18.0</version.assertj>
+    <version.zeebe>1.0.0</version.zeebe>
 
-    <version.junit>4.13.1</version.junit>
-    <version.log4j>2.11.1</version.log4j>
-    <version.mockito>3.6.0</version.mockito>
-
-    <version.protobuf>3.13.0</version.protobuf>
+    <version.protobuf>3.16.0</version.protobuf>
     <version.protoc>3.9.1</version.protoc>
     <version.slf4j>1.7.25</version.slf4j>
-    <version.zeebe>0.25.0</version.zeebe>
+
+    <version.assertj>3.19.0</version.assertj>
+    <version.junit>4.13.2</version.junit>
+    <version.log4j>2.11.1</version.log4j>
+    <version.mockito>3.9.0</version.mockito>
 
     <!-- plugin version -->
-    <plugin.version.checkstyle>3.1.1</plugin.version.checkstyle>
+    <plugin.version.checkstyle>3.1.2</plugin.version.checkstyle>
     <plugin.version.enforcer>3.0.0-M2</plugin.version.enforcer>
     <plugin.version.failsafe>2.22.2</plugin.version.failsafe>
     <plugin.version.fmt>2.10</plugin.version.fmt>
-    <plugin.version.license>3.0</plugin.version.license>
+    <plugin.version.license>4.1</plugin.version.license>
     <plugin.version.protobuf-maven-plugin>0.6.1</plugin.version.protobuf-maven-plugin>
     <plugin.version.surefire>2.22.2</plugin.version.surefire>
     <plugin.version.resources>3.2.0</plugin.version.resources>
     <plugin.version.shade>3.2.4</plugin.version.shade>
 
     <!-- maven extensions -->
-    <extension.version.os-maven-plugin>1.6.2</extension.version.os-maven-plugin>
+    <extension.version.os-maven-plugin>1.7.0</extension.version.os-maven-plugin>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.zeebe</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>zeebe-bom</artifactId>
         <version>${version.zeebe}</version>
         <scope>import</scope>
@@ -89,19 +89,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.zeebe</groupId>
+      <groupId>io.camunda</groupId>
       <artifactId>zeebe-exporter-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.zeebe</groupId>
-      <artifactId>zeebe-test</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -212,7 +206,7 @@
         <!-- dependency on build tool to reference the checkstyle cfg -->
         <dependencies>
           <dependency>
-            <groupId>io.zeebe</groupId>
+            <groupId>io.camunda</groupId>
             <artifactId>zeebe-build-tools</artifactId>
             <version>${version.zeebe}</version>
           </dependency>
@@ -311,33 +305,34 @@
     </plugins>
   </build>
 
+
   <profiles>
     <profile>
-      <id>release</id>
-      <properties>
-        <plugin.version.gpg>1.6</plugin.version.gpg>
-        <gpg.passphrase>${env.GPG_PASS}</gpg.passphrase>
-        <resume>false</resume>
-        <tag>${env.RELEASE_VERSION}</tag>
-        <releaseVersion>${env.RELEASE_VERSION}</releaseVersion>
-        <developmentVersion>${env.DEVELOPMENT_VERSION}</developmentVersion>
-        <arguments>-DskipTests</arguments>
-      </properties>
+      <id>community-action-maven-release</id>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <configuration>
-                <gpgArguments>
-                  <arg>--pinentry-mode</arg>
-                  <arg>loopback</arg>
-                </gpgArguments>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <!-- Prevent gpg from using pinentry programs -->
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+            </configuration>
+          </plugin>
+        </plugins>
       </build>
     </profile>
   </profiles>
@@ -369,9 +364,10 @@
   </repositories>
 
   <scm>
-    <url>https://github.com/zeebe-io/zeebe-exporter-protobuf</url>
-    <connection>scm:git:git@github.com:zeebe-io/zeebe-exporter-protobuf.git</connection>
-    <developerConnection>scm:git:git@github.com:zeebe-io/zeebe-exporter-protobuf.git
+    <url>https://github.com/camunda-community-hub/zeebe-exporter-protobuf</url>
+    <connection>scm:git:git@github.com:camunda-community-hub/zeebe-exporter-protobuf.git
+    </connection>
+    <developerConnection>scm:git:git@github.com:camunda-community-hub/zeebe-exporter-protobuf.git
     </developerConnection>
     <tag>HEAD</tag>
   </scm>
