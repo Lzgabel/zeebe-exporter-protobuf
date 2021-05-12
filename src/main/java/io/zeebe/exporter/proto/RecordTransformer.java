@@ -151,8 +151,8 @@ public final class RecordTransformer {
   }
 
   public static Schema.Record toGenericRecord(Record record) {
-    final var protobufRecord = toProtobufMessage(record);
-    final var anyRecord = Any.pack(protobufRecord);
+    final GeneratedMessageV3 protobufRecord = toProtobufMessage(record);
+    final Any anyRecord = Any.pack(protobufRecord);
 
     return Schema.Record.newBuilder().setRecord(anyRecord).build();
   }
@@ -194,7 +194,7 @@ public final class RecordTransformer {
       builder.addResources(toDeploymentRecordResource(resource));
     }
 
-    for (final var processMetadata : record.getValue().getProcessesMetadata()) {
+    for (final ProcessMetadataValue processMetadata : record.getValue().getProcessesMetadata()) {
       builder.addProcessMetadata(toProcessMetadata(processMetadata));
     }
 

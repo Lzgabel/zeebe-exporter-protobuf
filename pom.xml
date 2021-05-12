@@ -6,7 +6,7 @@
   <name>Zeebe Exporter Protobuf Schema</name>
   <groupId>io.zeebe</groupId>
   <artifactId>zeebe-exporter-protobuf</artifactId>
-  <version>1.0.0</version>
+  <version>xhzy-1.0.0</version>
   <packaging>jar</packaging>
 
   <url>https://github.com/camunda-community-hub/zeebe-exporter-protobuf</url>
@@ -23,7 +23,8 @@
   <properties>
 
     <!-- release parent settings -->
-    <version.java>11</version.java>
+<!--    <version.java>11</version.java>-->
+    <version.java>1.8</version.java>
     <nexus.snapshot.repository>
       https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots/
     </nexus.snapshot.repository>
@@ -137,9 +138,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
-        <configuration>
-          <release>11</release>
-        </configuration>
+<!--        <configuration>-->
+<!--          <release>11</release>-->
+<!--        </configuration>-->
       </plugin>
 
       <plugin>
@@ -169,123 +170,123 @@
         </executions>
       </plugin>
 
-      <!-- LICENSE PLUGIN -->
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <version>${plugin.version.license}</version>
-        <configuration>
-          <header>${license.header}</header>
-          <properties>
-            <owner>camunda services GmbH</owner>
-            <email>info@camunda.com</email>
-          </properties>
-          <includes>
-            <include>**/*.java</include>
-          </includes>
-          <mapping>
-            <java>SLASHSTAR_STYLE</java>
-          </mapping>
-        </configuration>
-        <executions>
-          <execution>
-            <id>add-license</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+<!--      &lt;!&ndash; LICENSE PLUGIN &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>com.mycila</groupId>-->
+<!--        <artifactId>license-maven-plugin</artifactId>-->
+<!--        <version>${plugin.version.license}</version>-->
+<!--        <configuration>-->
+<!--          <header>${license.header}</header>-->
+<!--          <properties>-->
+<!--            <owner>camunda services GmbH</owner>-->
+<!--            <email>info@camunda.com</email>-->
+<!--          </properties>-->
+<!--          <includes>-->
+<!--            <include>**/*.java</include>-->
+<!--          </includes>-->
+<!--          <mapping>-->
+<!--            <java>SLASHSTAR_STYLE</java>-->
+<!--          </mapping>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>add-license</id>-->
+<!--            <phase>compile</phase>-->
+<!--            <goals>-->
+<!--              <goal>format</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
-      <!-- CHECKSTYLE -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${plugin.version.checkstyle}</version>
-        <!-- dependency on build tool to reference the checkstyle cfg -->
-        <dependencies>
-          <dependency>
-            <groupId>io.camunda</groupId>
-            <artifactId>zeebe-build-tools</artifactId>
-            <version>${version.zeebe}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configLocation>check/.checkstyle.xml</configLocation>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-          <encoding>UTF-8</encoding>
-          <failOnViolation>true</failOnViolation>
-          <sourceDirectories>
-            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
-            <sourceDirectory>${project.basedir}/src/test/jmh</sourceDirectory>
-          </sourceDirectories>
-        </configuration>
-        <executions>
-          <execution>
-            <id>validate-java</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+<!--      &lt;!&ndash; CHECKSTYLE &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-checkstyle-plugin</artifactId>-->
+<!--        <version>${plugin.version.checkstyle}</version>-->
+<!--        &lt;!&ndash; dependency on build tool to reference the checkstyle cfg &ndash;&gt;-->
+<!--        <dependencies>-->
+<!--          <dependency>-->
+<!--            <groupId>io.camunda</groupId>-->
+<!--            <artifactId>zeebe-build-tools</artifactId>-->
+<!--            <version>${version.zeebe}</version>-->
+<!--          </dependency>-->
+<!--        </dependencies>-->
+<!--        <configuration>-->
+<!--          <configLocation>check/.checkstyle.xml</configLocation>-->
+<!--          <includeTestSourceDirectory>true</includeTestSourceDirectory>-->
+<!--          <encoding>UTF-8</encoding>-->
+<!--          <failOnViolation>true</failOnViolation>-->
+<!--          <sourceDirectories>-->
+<!--            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>-->
+<!--            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>-->
+<!--            <sourceDirectory>${project.basedir}/src/test/jmh</sourceDirectory>-->
+<!--          </sourceDirectories>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>validate-java</id>-->
+<!--            <phase>validate</phase>-->
+<!--            <goals>-->
+<!--              <goal>check</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
-      <!-- unit tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${plugin.version.surefire}</version>
-        <configuration>
-          <failIfNoTests>false</failIfNoTests>
-          <trimStackTrace>false</trimStackTrace>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-        </configuration>
-      </plugin>
+<!--      &lt;!&ndash; unit tests &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-surefire-plugin</artifactId>-->
+<!--        <version>${plugin.version.surefire}</version>-->
+<!--        <configuration>-->
+<!--          <failIfNoTests>false</failIfNoTests>-->
+<!--          <trimStackTrace>false</trimStackTrace>-->
+<!--          <redirectTestOutputToFile>true</redirectTestOutputToFile>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
 
-      <!-- INTEGRATION TESTS -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${plugin.version.failsafe}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <failIfNoTests>false</failIfNoTests>
-          <trimStackTrace>false</trimStackTrace>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-        </configuration>
-      </plugin>
+<!--      &lt;!&ndash; INTEGRATION TESTS &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-failsafe-plugin</artifactId>-->
+<!--        <version>${plugin.version.failsafe}</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>integration-test</goal>-->
+<!--              <goal>verify</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--        <configuration>-->
+<!--          <failIfNoTests>false</failIfNoTests>-->
+<!--          <trimStackTrace>false</trimStackTrace>-->
+<!--          <redirectTestOutputToFile>true</redirectTestOutputToFile>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
 
-      <!-- Google code format plugin -->
-      <plugin>
-        <groupId>com.coveo</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>${plugin.version.fmt}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <additionalSourceDirectories>
-            <additionalSourceDirectory>${project.basedir}/src/test/jmh
-            </additionalSourceDirectory>
-          </additionalSourceDirectories>
-        </configuration>
-      </plugin>
+<!--      &lt;!&ndash; Google code format plugin &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>com.coveo</groupId>-->
+<!--        <artifactId>fmt-maven-plugin</artifactId>-->
+<!--        <version>${plugin.version.fmt}</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>format</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--        <configuration>-->
+<!--          <additionalSourceDirectories>-->
+<!--            <additionalSourceDirectory>${project.basedir}/src/test/jmh-->
+<!--            </additionalSourceDirectory>-->
+<!--          </additionalSourceDirectories>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
 
       <!-- Shade Plugin -->
       <plugin>
