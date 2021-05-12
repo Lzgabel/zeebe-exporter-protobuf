@@ -46,6 +46,9 @@ import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.DeploymentResource;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import io.camunda.zeebe.protocol.record.value.deployment.ProcessMetadataValue;
+import io.zeebe.exporter.proto.Schema.RecordMetadata;
+import io.zeebe.exporter.proto.Schema.VariableDocumentRecord;
+import io.zeebe.exporter.proto.Schema.VariableDocumentRecord.UpdateSemantics;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -63,22 +66,23 @@ public final class RecordTransformer {
   private static final EnumMap<ValueType, Schema.RecordMetadata.ValueType> VALUE_TYPE_MAPPING =
       new EnumMap<>(ValueType.class);
 
-  private static final EnumMap<RecordType, Schema.RecordMetadata.RecordType> RECORD_TYPE_MAPPING = new EnumMap<>(RecordType.class);
+  private static final EnumMap<RecordType, RecordMetadata.RecordType> RECORD_TYPE_MAPPING =
+      new EnumMap<>(RecordType.class);
 
   private static final EnumMap<
-          VariableDocumentUpdateSemantic, Schema.VariableDocumentRecord.UpdateSemantics>
-      UPDATE_SEMANTICS_MAPPING =
-          new EnumMap<>(VariableDocumentUpdateSemantic.class);
+          VariableDocumentUpdateSemantic, VariableDocumentRecord.UpdateSemantics>
+      UPDATE_SEMANTICS_MAPPING = new EnumMap<>(VariableDocumentUpdateSemantic.class);
 
   static {
+    RECORD_TYPE_MAPPING.put(RecordType.COMMAND, RecordMetadata.RecordType.COMMAND);
+    RECORD_TYPE_MAPPING.put(
+        RecordType.COMMAND_REJECTION, RecordMetadata.RecordType.COMMAND_REJECTION);
+    RECORD_TYPE_MAPPING.put(RecordType.EVENT, RecordMetadata.RecordType.EVENT);
 
-    RECORD_TYPE_MAPPING.put(RecordType.COMMAND,  Schema.RecordMetadata.RecordType.COMMAND);
-    RECORD_TYPE_MAPPING.put(RecordType.COMMAND_REJECTION,  Schema.RecordMetadata.RecordType.COMMAND_REJECTION);
-    RECORD_TYPE_MAPPING.put(RecordType.EVENT,  Schema.RecordMetadata.RecordType.EVENT);
-
-    UPDATE_SEMANTICS_MAPPING.put(VariableDocumentUpdateSemantic.LOCAL, Schema.VariableDocumentRecord.UpdateSemantics.LOCAL);
-    UPDATE_SEMANTICS_MAPPING.put(VariableDocumentUpdateSemantic.PROPAGATE, Schema.VariableDocumentRecord.UpdateSemantics.PROPAGATE);
-
+    UPDATE_SEMANTICS_MAPPING.put(
+        VariableDocumentUpdateSemantic.LOCAL, VariableDocumentRecord.UpdateSemantics.LOCAL);
+    UPDATE_SEMANTICS_MAPPING.put(
+        VariableDocumentUpdateSemantic.PROPAGATE, VariableDocumentRecord.UpdateSemantics.PROPAGATE);
 
     TRANSFORMERS.put(ValueType.DEPLOYMENT, RecordTransformer::toDeploymentRecord);
     TRANSFORMERS.put(
@@ -105,30 +109,30 @@ public final class RecordTransformer {
     TRANSFORMERS.put(ValueType.VARIABLE_DOCUMENT, RecordTransformer::toVariableDocumentRecord);
     TRANSFORMERS.put(ValueType.ERROR, RecordTransformer::toErrorRecord);
 
-    VALUE_TYPE_MAPPING.put(ValueType.DEPLOYMENT, Schema.RecordMetadata.ValueType.DEPLOYMENT);
+    VALUE_TYPE_MAPPING.put(ValueType.DEPLOYMENT, RecordMetadata.ValueType.DEPLOYMENT);
     VALUE_TYPE_MAPPING.put(
-        ValueType.DEPLOYMENT_DISTRIBUTION, Schema.RecordMetadata.ValueType.DEPLOYMENT_DISTRIBUTION);
-    VALUE_TYPE_MAPPING.put(ValueType.ERROR, Schema.RecordMetadata.ValueType.ERROR);
-    VALUE_TYPE_MAPPING.put(ValueType.INCIDENT, Schema.RecordMetadata.ValueType.INCIDENT);
-    VALUE_TYPE_MAPPING.put(ValueType.JOB, Schema.RecordMetadata.ValueType.JOB);
-    VALUE_TYPE_MAPPING.put(ValueType.JOB_BATCH, Schema.RecordMetadata.ValueType.JOB_BATCH);
-    VALUE_TYPE_MAPPING.put(ValueType.MESSAGE, Schema.RecordMetadata.ValueType.MESSAGE);
+        ValueType.DEPLOYMENT_DISTRIBUTION, RecordMetadata.ValueType.DEPLOYMENT_DISTRIBUTION);
+    VALUE_TYPE_MAPPING.put(ValueType.ERROR, RecordMetadata.ValueType.ERROR);
+    VALUE_TYPE_MAPPING.put(ValueType.INCIDENT, RecordMetadata.ValueType.INCIDENT);
+    VALUE_TYPE_MAPPING.put(ValueType.JOB, RecordMetadata.ValueType.JOB);
+    VALUE_TYPE_MAPPING.put(ValueType.JOB_BATCH, RecordMetadata.ValueType.JOB_BATCH);
+    VALUE_TYPE_MAPPING.put(ValueType.MESSAGE, RecordMetadata.ValueType.MESSAGE);
     VALUE_TYPE_MAPPING.put(
         ValueType.MESSAGE_START_EVENT_SUBSCRIPTION,
-        Schema.RecordMetadata.ValueType.MESSAGE_START_EVENT_SUBSCRIPTION);
+        RecordMetadata.ValueType.MESSAGE_START_EVENT_SUBSCRIPTION);
     VALUE_TYPE_MAPPING.put(
-        ValueType.MESSAGE_SUBSCRIPTION, Schema.RecordMetadata.ValueType.MESSAGE_SUBSCRIPTION);
-    VALUE_TYPE_MAPPING.put(ValueType.TIMER, Schema.RecordMetadata.ValueType.TIMER);
-    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE, Schema.RecordMetadata.ValueType.VARIABLE);
-    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE_DOCUMENT, Schema.RecordMetadata.ValueType.VARIABLE_DOCUMENT);
-    VALUE_TYPE_MAPPING.put(ValueType.PROCESS, Schema.RecordMetadata.ValueType.PROCESS);
-    VALUE_TYPE_MAPPING.put(ValueType.PROCESS_EVENT, Schema.RecordMetadata.ValueType.PROCESS_EVENT);
-    VALUE_TYPE_MAPPING.put(ValueType.PROCESS_INSTANCE, Schema.RecordMetadata.ValueType.PROCESS_INSTANCE);
+        ValueType.MESSAGE_SUBSCRIPTION, RecordMetadata.ValueType.MESSAGE_SUBSCRIPTION);
+    VALUE_TYPE_MAPPING.put(ValueType.TIMER, RecordMetadata.ValueType.TIMER);
+    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE, RecordMetadata.ValueType.VARIABLE);
+    VALUE_TYPE_MAPPING.put(ValueType.VARIABLE_DOCUMENT, RecordMetadata.ValueType.VARIABLE_DOCUMENT);
+    VALUE_TYPE_MAPPING.put(ValueType.PROCESS, RecordMetadata.ValueType.PROCESS);
+    VALUE_TYPE_MAPPING.put(ValueType.PROCESS_EVENT, RecordMetadata.ValueType.PROCESS_EVENT);
+    VALUE_TYPE_MAPPING.put(ValueType.PROCESS_INSTANCE, RecordMetadata.ValueType.PROCESS_INSTANCE);
     VALUE_TYPE_MAPPING.put(
-        ValueType.PROCESS_INSTANCE_CREATION, Schema.RecordMetadata.ValueType.PROCESS_INSTANCE_CREATION);
+        ValueType.PROCESS_INSTANCE_CREATION, RecordMetadata.ValueType.PROCESS_INSTANCE_CREATION);
     VALUE_TYPE_MAPPING.put(
         ValueType.PROCESS_MESSAGE_SUBSCRIPTION,
-        Schema.RecordMetadata.ValueType.PROCESS_MESSAGE_SUBSCRIPTION);
+        RecordMetadata.ValueType.PROCESS_MESSAGE_SUBSCRIPTION);
   }
 
   private RecordTransformer() {}
@@ -174,12 +178,12 @@ public final class RecordTransformer {
   }
 
   private static Schema.RecordMetadata.ValueType toValueType(ValueType valueType) {
-    return VALUE_TYPE_MAPPING.getOrDefault(valueType, Schema.RecordMetadata.ValueType.UNKNOWN_VALUE_TYPE);
+    return VALUE_TYPE_MAPPING.getOrDefault(valueType, RecordMetadata.ValueType.UNKNOWN_VALUE_TYPE);
   }
 
   private static Schema.RecordMetadata.RecordType toRecordType(RecordType recordType) {
     return RECORD_TYPE_MAPPING.getOrDefault(
-        recordType, Schema.RecordMetadata.RecordType.UNKNOWN_RECORD_TYPE);
+        recordType, RecordMetadata.RecordType.UNKNOWN_RECORD_TYPE);
   }
 
   private static Schema.DeploymentRecord toDeploymentRecord(Record<DeploymentRecordValue> record) {
@@ -442,7 +446,7 @@ public final class RecordTransformer {
   private static Schema.VariableDocumentRecord.UpdateSemantics toUpdateSemantics(
       VariableDocumentUpdateSemantic updateSemantics) {
     return UPDATE_SEMANTICS_MAPPING.getOrDefault(
-        updateSemantics, Schema.VariableDocumentRecord.UpdateSemantics.UNKNOWN_UPDATE_SEMANTICS);
+        updateSemantics, UpdateSemantics.UNKNOWN_UPDATE_SEMANTICS);
   }
 
   private static Schema.ErrorRecord toErrorRecord(Record<ErrorRecordValue> record) {
