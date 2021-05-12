@@ -69,9 +69,7 @@ import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.DeploymentResource;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import io.camunda.zeebe.protocol.record.value.deployment.ProcessMetadataValue;
-import io.zeebe.exporter.proto.Schema.JobRecord;
-import io.zeebe.exporter.proto.Schema.RecordMetadata;
-import io.zeebe.exporter.proto.Schema.VariableDocumentRecord.UpdateSemantics;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
