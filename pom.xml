@@ -38,7 +38,7 @@
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
     <!-- project dependencies -->
-    <version.zeebe>1.0.0</version.zeebe>
+    <version.zeebe>xhzy-1.0.0</version.zeebe>
 
     <version.protobuf>3.16.0</version.protobuf>
     <version.protoc>3.9.1</version.protoc>
